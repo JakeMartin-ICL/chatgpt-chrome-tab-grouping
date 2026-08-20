@@ -2,8 +2,9 @@ import fs from "node:fs/promises";
 import { undoStatePath } from "../bridge/paths.js";
 
 export class UndoStore {
-  constructor(filePath = undoStatePath) {
+  constructor(filePath = undoStatePath, { supportsPosixPermissions = process.platform !== "win32" } = {}) {
     this.filePath = filePath;
+    this.supportsPosixPermissions = supportsPosixPermissions;
   }
 
   async load() {
@@ -17,7 +18,7 @@ export class UndoStore {
 
   async save(record) {
     await fs.writeFile(this.filePath, `${JSON.stringify(record)}\n`, { mode: 0o600 });
-    await fs.chmod(this.filePath, 0o600);
+    if (this.supportsPosixPermissions) await fs.chmod(this.filePath, 0o600);
   }
 
   async clear() {

@@ -5,3 +5,4 @@ coverage/
 .native-node-path
 dist/
 .dev-marketplace/
+bin/*.exe

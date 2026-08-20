@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import net from "node:net";
 import { randomUUID } from "node:crypto";
-import { bridgeSocketPath } from "./paths.js";
+import { bridgeSocketIsFilesystem, bridgeSocketPath } from "./paths.js";
 
 export class BridgeUnavailableError extends Error {
   constructor(message = "The Chrome companion extension is unavailable.") {
@@ -11,8 +11,13 @@ export class BridgeUnavailableError extends Error {
 }
 
 export class ChromeBridgeBroker {
-  constructor({ socketPath = bridgeSocketPath, requestTimeoutMs = 15_000 } = {}) {
+  constructor({
+    socketPath = bridgeSocketPath,
+    socketIsFilesystem = bridgeSocketIsFilesystem,
+    requestTimeoutMs = 15_000,
+  } = {}) {
     this.socketPath = socketPath;
+    this.socketIsFilesystem = socketIsFilesystem;
     this.requestTimeoutMs = requestTimeoutMs;
     this.server = null;
     this.profiles = new Map();
@@ -25,12 +30,15 @@ export class ChromeBridgeBroker {
     this.server = net.createServer((socket) => this.#accept(socket));
     await new Promise((resolve, reject) => {
       this.server.once("error", reject);
-      this.server.listen(this.socketPath, () => {
+      const listenOptions = this.socketIsFilesystem
+        ? { path: this.socketPath }
+        : { path: this.socketPath, readableAll: false, writableAll: false };
+      this.server.listen(listenOptions, () => {
         this.server.off("error", reject);
         resolve();
       });
     });
-    await fs.chmod(this.socketPath, 0o600);
+    if (this.socketIsFilesystem) await fs.chmod(this.socketPath, 0o600);
   }
 
   async close() {
@@ -45,9 +53,11 @@ export class ChromeBridgeBroker {
       await new Promise((resolve) => this.server.close(resolve));
       this.server = null;
     }
-    await fs.unlink(this.socketPath).catch((error) => {
-      if (error.code !== "ENOENT") throw error;
-    });
+    if (this.socketIsFilesystem) {
+      await fs.unlink(this.socketPath).catch((error) => {
+        if (error.code !== "ENOENT") throw error;
+      });
+    }
   }
 
   listProfiles() {
@@ -75,6 +85,7 @@ export class ChromeBridgeBroker {
   }
 
   async #removeStaleSocket() {
+    if (!this.socketIsFilesystem) return;
     const stat = await fs.lstat(this.socketPath).catch((error) => {
       if (error.code === "ENOENT") return null;
       throw error;

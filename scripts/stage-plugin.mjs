@@ -21,10 +21,21 @@ for (const entry of [
   "skills",
   "scripts/install-macos.sh",
   "scripts/uninstall-macos.sh",
+  "scripts/install-windows.ps1",
+  "scripts/uninstall-windows.ps1",
+  "src/windows",
   "LICENSE",
   "README.md",
 ]) {
   await fs.cp(path.join(projectRoot, entry), path.join(pluginRoot, entry), { recursive: true });
+}
+
+if (process.platform === "win32") {
+  const windowsLauncher = path.join(pluginRoot, "bin", "chrome-tab-grouping-mcp.exe");
+  await fs.access(windowsLauncher).catch(() => {
+    throw new Error("The Windows MCP launcher is missing. Run npm run install:windows before staging the plugin.");
+  });
+  await fs.rm(path.join(pluginRoot, "bin", "chrome-tab-grouping-mcp"), { force: true });
 }
 
 const nodePath = await fs.readFile(path.join(projectRoot, ".native-node-path"), "utf8")
