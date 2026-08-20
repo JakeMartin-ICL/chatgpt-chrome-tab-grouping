@@ -1,0 +1,26 @@
+{
+  "name": "chatgpt-chrome-tab-grouping",
+  "version": "0.1.0",
+  "description": "Inspect and safely organize Chrome tabs using semantic grouping plans.",
+  "author": {
+    "name": "Local developer"
+  },
+  "license": "MIT",
+  "keywords": ["chrome", "tabs", "productivity", "grouping"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Chrome Tab Grouping",
+    "shortDescription": "Semantically organize Chrome tabs safely",
+    "longDescription": "Inspect Chrome tab metadata, preview semantic grouping plans, apply approved changes, and undo the most recent operation.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Group my ungrouped Chrome tabs.",
+      "Organize my tabs and show me a compact preview.",
+      "Undo the last tab grouping operation."
+    ],
+    "brandColor": "#4285F4"
+  }
+}

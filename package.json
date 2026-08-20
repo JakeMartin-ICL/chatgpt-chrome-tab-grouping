@@ -1,0 +1,31 @@
+{
+  "name": "chatgpt-chrome-tab-grouping",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A local Codex plugin that safely groups Chrome tabs through supported extension APIs.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/mcp/cli.js",
+    "native-host": "node src/bridge/native-host.js",
+    "build": "node scripts/build-plugin.mjs",
+    "plugin:stage": "npm run build && node scripts/stage-plugin.mjs",
+    "plugin:install": "npm run plugin:stage && node scripts/install-dev-plugin.mjs",
+    "plugin:refresh": "npm run plugin:install",
+    "setup": "npm install && npm run install:mac && npm run plugin:install",
+    "teardown": "npm run uninstall:mac && node scripts/remove-dev-plugin.mjs",
+    "test": "node --test",
+    "check": "node --check src/mcp/cli.js && node --check src/bridge/native-host.js && node --check extension/service-worker.js && node --check extension/operations.js && node --check extension/options.js && node --check scripts/build-plugin.mjs && node --check scripts/stage-plugin.mjs && node --check scripts/install-dev-plugin.mjs && node --check scripts/remove-dev-plugin.mjs && bash -n scripts/install-macos.sh scripts/uninstall-macos.sh bin/chrome-tab-grouping-native-host bin/chrome-tab-grouping-mcp",
+    "install:mac": "bash scripts/install-macos.sh",
+    "uninstall:mac": "bash scripts/uninstall-macos.sh"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

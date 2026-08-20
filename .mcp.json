@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "chrome-tab-grouping": {
+      "command": "./bin/chrome-tab-grouping-mcp",
+      "args": [],
+      "cwd": "."
+    }
+  }
+}

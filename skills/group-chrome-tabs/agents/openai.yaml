@@ -1,0 +1,4 @@
+interface:
+  display_name: "Group Chrome Tabs"
+  short_description: "Semantically organize Chrome tabs safely"
+  default_prompt: "Use $group-chrome-tabs to organize my open Chrome tabs."

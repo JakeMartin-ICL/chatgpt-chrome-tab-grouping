@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+plugin_root="$(cd "${script_dir}/.." && pwd)"
+node_path_file="${plugin_root}/.native-node-path"
+
+if [[ -f "${node_path_file}" ]]; then
+  node_bin="$(<"${node_path_file}")"
+else
+  node_bin="$(command -v node || true)"
+fi
+
+if [[ -z "${node_bin}" || ! -x "${node_bin}" ]]; then
+  echo "Node.js runtime not found. Re-run npm run install:mac." >&2
+  exit 1
+fi
+
+if [[ -f "${plugin_root}/dist/native-host.js" ]]; then
+  entrypoint="${plugin_root}/dist/native-host.js"
+else
+  entrypoint="${plugin_root}/src/bridge/native-host.js"
+fi
+
+exec "${node_bin}" "${entrypoint}"

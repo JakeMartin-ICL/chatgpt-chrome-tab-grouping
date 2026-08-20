@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Tab Grouping Companion",
+  "version": "0.1.0",
+  "description": "Executes validated tab grouping plans from the local Codex plugin.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAztBHT8quFX2Mx27HWx+XqptWKUHJgwr9RiKLKoROSbIkeMoTJOM1NLTWcZhnyThy4LxuphkegVmONu9E4jHZEJfItGSZ1es4RfNbSxPjeLvcqFo5B+1wbRV1po4MvdssBf/GMRSDm4ZYtmw1rxf3rNAy9WJGTeEX312vNfBxYT6gaLhhjb7qlv0bWq/+D7R1FHm/QZDbRinDut7WWYthWuWsO0D4ypJvKdv1BjFU34IdpwjDQjn872XuRv0nj4Vxt/Z8ZD0uIms2YGFu8qoTjisrru/UY0VbbeCPRE665/NxYLFBGGNhZj2KM5n6FffP500XlIEVoRMporx2BzhkaQIDAQAB",
+  "minimum_chrome_version": "120",
+  "incognito": "not_allowed",
+  "permissions": ["tabs", "tabGroups", "nativeMessaging", "storage", "alarms"],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "options_page": "options.html"
+}

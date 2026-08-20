@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Chrome Tab Grouping</title>
+    <style>
+      body { font: 15px system-ui, sans-serif; max-width: 32rem; margin: 3rem auto; padding: 0 1rem; color: #202124; }
+      label { display: block; font-weight: 600; margin-bottom: .5rem; }
+      input { box-sizing: border-box; width: 100%; padding: .7rem; border: 1px solid #bdc1c6; border-radius: .4rem; }
+      .checkbox { display: flex; gap: .5rem; align-items: center; margin-top: 1rem; font-weight: 400; }
+      .checkbox input { width: auto; }
+      button { margin-top: 1rem; padding: .65rem 1rem; border: 0; border-radius: .4rem; color: white; background: #1a73e8; }
+      #status { margin-left: .75rem; color: #188038; }
+    </style>
+  </head>
+  <body>
+    <h1>Chrome Tab Grouping</h1>
+    <p>Give this Chrome profile a name that Codex can use, such as “Personal” or “Work.”</p>
+    <label for="profile-label">Profile name</label>
+    <input id="profile-label" maxlength="80" autocomplete="off">
+    <label class="checkbox"><input id="profile-default" type="checkbox"> Use this profile by default when several are connected</label>
+    <button id="save" type="button">Save</button><span id="status" role="status"></span>
+    <script src="options.js"></script>
+  </body>
+</html>
