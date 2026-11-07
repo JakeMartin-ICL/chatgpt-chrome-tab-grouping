@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chrome Tab Grouping Companion</title>
+    <style>
+      body { width: 17rem; margin: 0; padding: 1rem; color: #202124; font: 14px/1.4 system-ui, sans-serif; }
+      h1 { margin: 0 0 .75rem; font-size: 15px; }
+      p { margin: 0 0 .85rem; }
+      #status { display: flex; align-items: center; gap: .5rem; }
+      #status::before { width: .65rem; height: .65rem; border-radius: 50%; background: #9aa0a6; content: ""; }
+      #status[data-state="connected"]::before { background: #188038; }
+      #status[data-state="connecting"]::before { background: #f9ab00; }
+      #status[data-state="disconnected"]::before { background: #d93025; }
+      button { width: 100%; padding: .6rem .8rem; border: 0; border-radius: .4rem; color: white; background: #1a73e8; font: inherit; cursor: pointer; }
+      button:disabled { opacity: .65; cursor: default; }
+      a { display: block; margin-top: .75rem; color: #1a73e8; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <h1>Tab Grouping Companion</h1>
+    <p id="status" data-state="connecting" role="status">Checking connection…</p>
+    <button id="reconnect" type="button">Reconnect now</button>
+    <a href="options.html" target="_blank">Profile settings</a>
+    <script src="popup.js"></script>
+  </body>
+</html>

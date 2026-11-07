@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-chrome-tab-grouping",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "description": "A local Codex plugin that safely groups Chrome tabs through supported extension APIs.",
@@ -22,6 +22,7 @@
     "teardown:windows": "npm run uninstall:windows && node scripts/remove-dev-plugin.mjs",
     "test": "node --test",
     "check": "node scripts/check.mjs",
+    "check:bundle": "npm run build && node scripts/smoke-shared-bundle.mjs",
     "install:mac": "bash scripts/install-macos.sh",
     "uninstall:mac": "bash scripts/uninstall-macos.sh",
     "install:windows": "npm run build && powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/install-windows.ps1",

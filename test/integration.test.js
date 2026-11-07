@@ -118,3 +118,28 @@ test("protects shared groups and cross-window moves during preview", async () =>
     /Shared group/,
   );
 });
+
+test("profile listing briefly waits for a sleeping companion to reconnect", async () => {
+  const connectedProfile = {
+    profile_id: "profile-delayed",
+    label: "Delayed",
+    is_default: false,
+    connected_at: new Date(0).toISOString(),
+  };
+  let waited = false;
+  const service = new TabGroupingService({
+    broker: {
+      listProfiles() { return []; },
+      async waitForProfiles(timeoutMs) {
+        assert.equal(timeoutMs, 5_000);
+        waited = true;
+        return [connectedProfile];
+      },
+    },
+  });
+
+  const result = await service.listProfiles();
+  assert.equal(waited, true);
+  assert.deepEqual(result.profiles, [connectedProfile]);
+  assert.equal(result.connected_count, 1);
+});

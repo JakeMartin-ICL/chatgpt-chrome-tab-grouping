@@ -3,9 +3,13 @@ import { spawnSync } from "node:child_process";
 const nodeFiles = [
   "src/mcp/cli.js",
   "src/bridge/native-host.js",
+  "src/bridge/daemon.js",
+  "src/bridge/daemon-cli.js",
+  "src/bridge/shared-client.js",
   "extension/service-worker.js",
   "extension/operations.js",
   "extension/options.js",
+  "extension/popup.js",
   "scripts/build-plugin.mjs",
   "scripts/stage-plugin.mjs",
   "scripts/install-dev-plugin.mjs",
@@ -13,6 +17,8 @@ const nodeFiles = [
   "scripts/setup.mjs",
   "scripts/refresh.mjs",
   "scripts/teardown.mjs",
+  "scripts/stop-daemon.mjs",
+  "scripts/smoke-shared-bundle.mjs",
   "scripts/check.mjs",
 ];
 

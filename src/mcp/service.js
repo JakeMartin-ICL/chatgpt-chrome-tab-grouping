@@ -11,14 +11,17 @@ export class TabGroupingService {
     this.plans = new Map();
   }
 
-  listProfiles() {
-    const profiles = this.broker.listProfiles();
+  async listProfiles() {
+    let profiles = await this.broker.listProfiles();
+    if (profiles.length === 0 && this.broker.waitForProfiles) {
+      profiles = await this.broker.waitForProfiles(5_000);
+    }
     const defaults = profiles.filter((profile) => profile.is_default);
     return {
       profiles,
       connected_count: profiles.length,
       selection_hint: profiles.length === 0
-        ? "Open Chrome with the companion extension enabled."
+        ? "Open Chrome with the companion extension enabled, then click its toolbar icon and choose Reconnect now."
           : profiles.length === 1
           ? "This is the only connected profile and may be selected automatically."
           : defaults.length === 1
@@ -34,7 +37,7 @@ export class TabGroupingService {
       snapshot = this.snapshots.get(input.snapshot_id);
       if (!snapshot) throw new Error("Unknown or expired snapshot. Refresh the Chrome tab inventory.");
     } else {
-      const profile = this.#selectProfile(input.profile_id);
+      const profile = await this.#selectProfile(input.profile_id);
       const inventory = await this.broker.request(profile.profile_id, "inventory");
       snapshot = createSnapshot(profile, inventory, this.now());
       this.snapshots.set(snapshot.id, snapshot);
@@ -100,15 +103,17 @@ export class TabGroupingService {
     return { undone: true, ...result };
   }
 
-  #selectProfile(profileId) {
-    const profiles = this.broker.listProfiles();
+  async #selectProfile(profileId) {
+    const profiles = await this.broker.listProfiles();
     if (profileId) {
       const profile = profiles.find((candidate) => candidate.profile_id === profileId);
       if (!profile) throw new Error(`Chrome profile is not connected: ${profileId}`);
       return profile;
     }
     if (profiles.length === 1) return profiles[0];
-    if (profiles.length === 0) throw new Error("Chrome is unavailable. Open Chrome with the companion extension enabled.");
+    if (profiles.length === 0) {
+      throw new Error("Chrome is unavailable. Open Chrome, click the companion extension's toolbar icon, and choose Reconnect now.");
+    }
     const defaults = profiles.filter((profile) => profile.is_default);
     if (defaults.length === 1) return defaults[0];
     if (defaults.length > 1) throw new Error("Multiple connected Chrome profiles are marked as default. Select one profile explicitly.");

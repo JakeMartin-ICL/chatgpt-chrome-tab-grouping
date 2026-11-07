@@ -42,11 +42,11 @@ const operationSchema = z.discriminatedUnion("type", [
 ]);
 
 export function createMcpServer(service) {
-  const server = new McpServer({ name: "chrome-tab-grouping", version: "0.1.0" });
+  const server = new McpServer({ name: "chrome-tab-grouping", version: "0.1.2" });
 
   server.registerTool("list_chrome_profiles", {
     title: "List connected Chrome profiles",
-    description: "List Chrome profile instances currently connected through the companion extension.",
+    description: "List Chrome profile instances connected through the companion extension, briefly waiting for a sleeping companion to reconnect.",
     inputSchema: {},
     annotations: { readOnlyHint: true, openWorldHint: false },
   }, () => call(() => service.listProfiles()));

@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-chrome-tab-grouping",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Inspect and safely organize Chrome tabs using semantic grouping plans.",
   "author": {
     "name": "Local developer"

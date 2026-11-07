@@ -5,6 +5,7 @@ if (!["darwin", "win32"].includes(process.platform)) {
 }
 
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
+run(["node", "scripts/stop-daemon.mjs"]);
 run(["run", process.platform === "win32" ? "uninstall:windows" : "uninstall:mac"]);
 run(["node", "scripts/remove-dev-plugin.mjs"]);
 

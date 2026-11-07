@@ -22,6 +22,7 @@ export class ChromeBridgeBroker {
     this.server = null;
     this.profiles = new Map();
     this.pending = new Map();
+    this.profileWaiters = new Set();
   }
 
   async start() {
@@ -38,7 +39,9 @@ export class ChromeBridgeBroker {
         resolve();
       });
     });
-    if (this.socketIsFilesystem) await fs.chmod(this.socketPath, 0o600);
+    if (this.socketIsFilesystem) {
+      await fs.chmod(this.socketPath, 0o600);
+    }
   }
 
   async close() {
@@ -49,14 +52,10 @@ export class ChromeBridgeBroker {
       pending.reject(new BridgeUnavailableError("The Chrome bridge stopped before responding."));
     }
     this.pending.clear();
+    this.#settleProfileWaiters();
     if (this.server) {
       await new Promise((resolve) => this.server.close(resolve));
       this.server = null;
-    }
-    if (this.socketIsFilesystem) {
-      await fs.unlink(this.socketPath).catch((error) => {
-        if (error.code !== "ENOENT") throw error;
-      });
     }
   }
 
@@ -64,6 +63,21 @@ export class ChromeBridgeBroker {
     return [...this.profiles.values()]
       .map(({ profileId, label, isDefault, connectedAt }) => ({ profile_id: profileId, label, is_default: isDefault, connected_at: connectedAt }))
       .sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  async waitForProfiles(timeoutMs = 5_000) {
+    const profiles = this.listProfiles();
+    if (profiles.length || timeoutMs <= 0) return profiles;
+    return await new Promise((resolve) => {
+      const waiter = {
+        resolve,
+        timer: setTimeout(() => {
+          this.profileWaiters.delete(waiter);
+          resolve(this.listProfiles());
+        }, timeoutMs),
+      };
+      this.profileWaiters.add(waiter);
+    });
   }
 
   async request(profileId, action, payload = {}) {
@@ -127,6 +141,8 @@ export class ChromeBridgeBroker {
               connectedAt: new Date().toISOString(),
               socket,
             });
+            socket.write(`${JSON.stringify({ type: "ready" })}\n`);
+            this.#settleProfileWaiters();
           } else if (message.type === "response") {
             this.#resolveResponse(message, registeredProfileId);
           }
@@ -146,5 +162,14 @@ export class ChromeBridgeBroker {
     this.pending.delete(message.requestId);
     if (message.ok) pending.resolve(message.result);
     else pending.reject(new Error(message.error?.message ?? "Chrome operation failed."));
+  }
+
+  #settleProfileWaiters() {
+    const profiles = this.listProfiles();
+    for (const waiter of this.profileWaiters) {
+      clearTimeout(waiter.timer);
+      waiter.resolve(profiles);
+    }
+    this.profileWaiters.clear();
   }
 }

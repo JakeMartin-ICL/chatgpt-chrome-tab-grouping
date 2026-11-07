@@ -3,20 +3,32 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { bridgeEndpointFor, undoStatePathFor } from "../src/bridge/paths.js";
+import {
+  bridgeControlEndpointFor,
+  bridgeEndpointFor,
+  undoStatePathFor,
+} from "../src/bridge/paths.js";
 import { UndoStore } from "../src/core/state-store.js";
 
 test("uses a Unix socket on macOS", () => {
   assert.equal(
     bridgeEndpointFor({ platform: "darwin", tempDir: "/tmp/example", identity: "501" }),
-    "/tmp/example/chatgpt-chrome-tab-grouping-501.sock",
+    "/tmp/example/chatgpt-chrome-tab-grouping-v2-501.sock",
+  );
+  assert.equal(
+    bridgeControlEndpointFor({ platform: "darwin", tempDir: "/tmp/example", identity: "501" }),
+    "/tmp/example/chatgpt-chrome-tab-grouping-control-v2-501.sock",
   );
 });
 
 test("uses a named pipe with a sanitized identity on Windows", () => {
   assert.equal(
     bridgeEndpointFor({ platform: "win32", identity: "DOMAIN\\Jake Martin" }),
-    "\\\\.\\pipe\\chatgpt-chrome-tab-grouping-DOMAIN-Jake-Martin",
+    "\\\\.\\pipe\\chatgpt-chrome-tab-grouping-v2-DOMAIN-Jake-Martin",
+  );
+  assert.equal(
+    bridgeControlEndpointFor({ platform: "win32", identity: "DOMAIN\\Jake Martin" }),
+    "\\\\.\\pipe\\chatgpt-chrome-tab-grouping-control-v2-DOMAIN-Jake-Martin",
   );
 });
 

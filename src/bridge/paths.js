@@ -16,8 +16,26 @@ export function bridgeEndpointFor({
 } = {}) {
   const suffix = safeIdentity(identity);
   return platform === "win32"
-    ? `\\\\.\\pipe\\chatgpt-chrome-tab-grouping-${suffix}`
-    : path.posix.join(tempDir, `chatgpt-chrome-tab-grouping-${suffix}.sock`);
+    ? `\\\\.\\pipe\\chatgpt-chrome-tab-grouping-v2-${suffix}`
+    : path.posix.join(tempDir, `chatgpt-chrome-tab-grouping-v2-${suffix}.sock`);
+}
+
+export function bridgeControlEndpointFor({
+  platform = process.platform,
+  tempDir = os.tmpdir(),
+  identity = currentIdentity(),
+} = {}) {
+  const suffix = safeIdentity(identity);
+  return platform === "win32"
+    ? `\\\\.\\pipe\\chatgpt-chrome-tab-grouping-control-v2-${suffix}`
+    : path.posix.join(tempDir, `chatgpt-chrome-tab-grouping-control-v2-${suffix}.sock`);
+}
+
+export function bridgeDaemonLockPathFor({
+  tempDir = os.tmpdir(),
+  identity = currentIdentity(),
+} = {}) {
+  return path.join(tempDir, `chatgpt-chrome-tab-grouping-daemon-${safeIdentity(identity)}.lock`);
 }
 
 export function undoStatePathFor({
@@ -32,8 +50,17 @@ export function undoStatePathFor({
 export const bridgeSocketPath = process.env.CHROME_TAB_GROUPING_SOCKET
   ?? bridgeEndpointFor();
 
+export const bridgeControlSocketPath = process.env.CHROME_TAB_GROUPING_CONTROL_SOCKET
+  ?? bridgeControlEndpointFor();
+
+export const bridgeDaemonLockPath = process.env.CHROME_TAB_GROUPING_DAEMON_LOCK
+  ?? bridgeDaemonLockPathFor();
+
 export const bridgeSocketIsFilesystem = process.platform !== "win32"
   && !bridgeSocketPath.startsWith("\\\\.\\pipe\\");
+
+export const bridgeControlSocketIsFilesystem = process.platform !== "win32"
+  && !bridgeControlSocketPath.startsWith("\\\\.\\pipe\\");
 
 export const undoStatePath = process.env.CHROME_TAB_GROUPING_UNDO_FILE
   ?? undoStatePathFor();

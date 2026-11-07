@@ -1,12 +1,14 @@
 #!/usr/bin/env node
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { ChromeBridgeBroker } from "../bridge/broker.js";
+import { SharedChromeBridgeClient } from "../bridge/shared-client.js";
 import { TabGroupingService } from "./service.js";
 import { createMcpServer } from "./server.js";
 
 const broker = process.env.CHROME_TAB_GROUPING_DISABLE_BRIDGE === "1"
   ? new DisabledBridgeBroker()
-  : new ChromeBridgeBroker();
+  : new SharedChromeBridgeClient({ daemonEntrypoint: daemonEntrypoint() });
 await broker.start();
 
 const service = new TabGroupingService({ broker });
@@ -26,7 +28,15 @@ function DisabledBridgeBroker() {
   return {
     async start() {},
     async close() {},
-    listProfiles() { return []; },
+    async listProfiles() { return []; },
     async request() { throw new Error("Chrome bridge is disabled."); },
   };
+}
+
+function daemonEntrypoint() {
+  const currentFile = fileURLToPath(import.meta.url);
+  const currentDirectory = path.dirname(currentFile);
+  return path.basename(currentDirectory) === "dist"
+    ? path.join(currentDirectory, "bridge-daemon.js")
+    : path.resolve(currentDirectory, "../bridge/daemon-cli.js");
 }

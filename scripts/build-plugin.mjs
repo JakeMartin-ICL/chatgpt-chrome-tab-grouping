@@ -24,4 +24,9 @@ await Promise.all([
     entryPoints: [path.join(projectRoot, "src/bridge/native-host.js")],
     outfile: path.join(projectRoot, "dist/native-host.js"),
   }),
+  build({
+    ...shared,
+    entryPoints: [path.join(projectRoot, "src/bridge/daemon-cli.js")],
+    outfile: path.join(projectRoot, "dist/bridge-daemon.js"),
+  }),
 ]);
